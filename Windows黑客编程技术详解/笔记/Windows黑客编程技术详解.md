@@ -1474,3 +1474,90 @@ std::string RSADecrypt(const std::string& cipher,
 与 HTTP 编程操作大体相同，区别在于连接端口（HTTPS 为 443）、请求标志（增加INTERNET FLAG_SECURE等）和安全标志（如SECURITY_FLAG_IGNORE_UNKNOWN_CA）的设置。
 ***
 # 11、功能技术
+#### 进程遍历
+- CreateToolhelp32Snapshot：获取进程、线程、模块等快照
+- Process32First/Process32Next：遍历进程快照
+- Thread32First/Thread32Next：遍历线程快照  
+- Module32First/Module32Next：遍历进程模块快照
+#### 文件遍历
+- FindFirstFile：搜索文件或目录
+- FindNextFile：继续搜索
+- WIN32_FIND_DATA：存储文件信息
+#### 桌面截屏
+- GetDC：获取设备上下文句柄
+- BitBlt：进行位块转换
+- ICONINFO：存储图标信息
+#### 按键记录
+- RegisterRawInputDevices：注册原始输入设备
+- GetRawInputData：获取原始输入数据
+#### 远程CMD
+- CreatePipe：创建匿名管道，获取读写句柄
+#### U盘监控
+- WM_DEVICECHANGE：消息通知设备更改
+- DEV_BROADCAST_HDR和DEV_BROADCAST_VOLUME：存储设备相关信息
+#### 文件监控
+- ReadDirectoryChangesW：监控文件目录操作
+#### 自删除
+- MoveFileEx：移动文件
+***
+# 12、开发环境
+***
+# 13、文件管理技术
+#### 文件管理之内核API
+创建文件或目录：ZwCreateFile 函数创建或打开文件和目录，需初始化对象属性，设置相关参数，创建成功后关闭句柄，注意内核下文件路径格式。
+
+删除文件或空目录：ZwDeleteFile 函数删除指定文件或空目录，初始化对象属性后调用该函数，非空目录无法删除。
+
+获取文件大小：ZwQueryInformationFile 函数获取文件信息，包括大小，通过打开文件句柄并调用该函数，从返回结构体中获取文件大小。
+
+读写文件：ZwReadFile 和 ZwWriteFile 函数用于读写文件，需先获取文件句柄，读写操作前设置权限，可申请非分页内存存放数据，注意及时释放。
+
+重命名文件名称：ZwSetInformationFile 函数更改文件信息，实现文件或目录重命名，需初始化对象属性并设置重命名信息。
+
+文件遍历：ZwQueryDirectoryFile 函数遍历文件，获取文件信息并根据偏移值计算下一个文件信息，实现遍历，注意相关参数设置和内存释放。
+#### 文件管理之IRP
+IoAllocateIrp：申请创建 IRP
+IoCallDriver：发送 IRP 给驱动程序
+
+创建或打开文件
+向 FSD 发送 IRP_MJ_CREATE 消息的 IRP
+包括打开驱动器获取文件对象、申请创建 IRP 并设置、发送 IRP 等待处理等步骤
+创建实例回调函数释放 IRP
+
+查询文件信息
+创建并构造 IRP_MJ_QUERY_INFORMATION 消息 IRP
+设置相关参数后发送给 FSD 并等待处理
+
+设置文件信息
+与查询文件信息类似
+需对 IRP 结构和 I/O 堆栈空间进行相应设置
+
+读写文件
+写入文件需设置 IRP_MJ_WRITE 相关参数
+包括缓冲区、偏移量等设置
+
+文件遍历
+设置 IRP_MJ_DIRECTORY_CONTROL 相关参数
+#### 文件管理之NTFS解析
+- 根据分区引导扇区获取相关信息
+- 计算根目录文件记录
+- 查找属性获取 Data Run
+- 定位起始簇和文件名
+- 最终找到文件数据
+***
+# 14、注册表管理技术
+#### 注册表管理之内核API
+创建注册表键：ZwCreateKey 函数创建或打开注册表项，需指定访问权限、对象属性等参数，可选择创建选项，ZwOpenKey 函数用法类似。
+
+删除注册表键：ZwDeleteKey 函数删除注册表键，需初始化对象属性，指定要删除的键路径。
+
+修改注册表键值：ZwSetValueKey 函数设置注册表键值，可设置不同类型的值，需先打开或创建键，再设置值。
+
+查询注册表键值：ZwQueryValueKey 函数查询注册表键值，获取键值信息，根据指定信息类型返回相应数据。
+***
+# 15、HOOK技术
+#### SSDK HOOK
+https://www.cnblogs.com/BoyXiao/archive/2011/09/03/2164574.html
+#### 过滤驱动
+https://xz.aliyun.com/t/6581?time__1311=n4%2BxnD0Dg7i%3D3D5P7KDsA3xCumGQiTDRiD7q4rID
+
