@@ -1473,4 +1473,4 @@ std::string RSADecrypt(const std::string& cipher,
 ##### 基于 Winlnet 库的 HTTPS 文件上传与下载
 与 HTTP 编程操作大体相同，区别在于连接端口（HTTPS 为 443）、请求标志（增加INTERNET FLAG_SECURE等）和安全标志（如SECURITY_FLAG_IGNORE_UNKNOWN_CA）的设置。
 ***
-# 功能技术
+# 11、功能技术
